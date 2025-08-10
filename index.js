@@ -1,3 +1,4 @@
+const fetch = require('node-fetch')
 const fs = require('fs');
 const path = require('path');
 
@@ -70,14 +71,19 @@ module.exports = function AntiToxic(mod) {
             instances: dungeons.map(d => ({ id: d, type: 0 })),
         }
         mod.send('C_MATCH_DEL', 1, packet)
-        mod.command.message(`<FONT COLOR="#FF2222">${names.join(', ')}</FONT> detected in the matching queue. Canceling ${packet.dungeons.length} dungeon(s).`)
+        mod.command.message(`<FONT COLOR="#FF2222">${names.join(', ')}</FONT> detected in the matching queue. Canceling ${packet.instances.length} dungeon(s).`)
     }
 
     function enable() {
         if (enabled) return
 
         enabled = true
-        timer = mod.setInterval(monitorQueue, 2000)
+        timer = (async function loop() {
+            await monitorQueue();
+            if (enabled) {
+                return mod.setTimeout(loop, 2000);
+            }
+        })();
         mod.command.message('Module has been enabled.')
     }
 
@@ -129,6 +135,7 @@ module.exports = function AntiToxic(mod) {
         })
     }
     
+    // TODO optimize - start monitor only while in the matching queue
     async function monitorQueue() {
         const me = mod.game.me.name
 
@@ -189,6 +196,12 @@ module.exports = function AntiToxic(mod) {
         }
     }
 
-    if (enabled)
-        timer = mod.setInterval(monitorQueue, 2000)
+    if (enabled) {
+        timer = (async function loop() {
+            await monitorQueue();
+            if (enabled) {
+                return mod.setTimeout(loop, 2000);
+            }
+        })();
+    }
 }
