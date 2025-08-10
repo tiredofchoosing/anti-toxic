@@ -1,0 +1,12 @@
+{
+  "files": {
+    "index.js": "df4f29abda5d77bb9fd71a8067d432f0b6d799cebfc7c1f78e01eb6b0d7638e6",
+    "module.json": "f921cf91db6f898b116a4133c13872c6c2e4cd5ed6b49ce3b7bf98b59e545eb0",
+    "README.md": "a1e726db63624f1ff836325258a4f8333a52fad41f7eb261f0ce3a1f797a7f02",
+    "data/blacklist.json": {
+        "overwrite": false,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "defs/C_MATCH_DEL.1.def": "992f869c07db9759efbd264fab53d33109d670b439212396281f84539807d34f"
+  }
+}
