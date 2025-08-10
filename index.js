@@ -21,7 +21,7 @@ module.exports = function AntiToxic(mod) {
         $none: printHelp,
         help: printHelp,
         add: registerName, // add [name]
-        remove: unregisterName, // add [name]
+        remove: unregisterName, // remove [name]
         on: enable, // on
         off: disable, // off
         list: showList, // list
@@ -91,7 +91,7 @@ module.exports = function AntiToxic(mod) {
         if (!enabled) return
 
         enabled = false
-        mod.clearInterval(timer)
+        mod.clearTimeout(timer)
         timer = null
         mod.command.message('Module has been disabled.')
     }
@@ -135,7 +135,9 @@ module.exports = function AntiToxic(mod) {
         })
     }
     
-    // TODO optimize - start monitor only while in the matching queue
+    // TODO
+    // optimize - monitor only while in the matching queue
+    // and only if player is solo or party leader
     async function monitorQueue() {
         const me = mod.game.me.name
 

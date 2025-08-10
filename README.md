@@ -1,4 +1,4 @@
-# dungeon-master
+# anti-toxic
 
 The module will automatically cancel your dungeon matching queue, if one of blacklisted characters is in the same queue.
 
