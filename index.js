@@ -7,6 +7,7 @@ module.exports = function AntiToxic(mod) {
     let enabled = true
     let timer = null
     let attempts = 0
+    let isInQueue = false
     const saveFileName = 'blacklist.json'
     const saveFilePath = path.join(mod.info.path, 'data', saveFileName)
     const api = 'http://178.250.154.7:8080/dungeons'
@@ -15,6 +16,9 @@ module.exports = function AntiToxic(mod) {
 
     mod.game.initialize("me")
     mod.dispatch.addDefinition("C_MATCH_DEL", 1, path.join(mod.info.path, "defs", "C_MATCH_DEL.1.def"))
+
+    mod.hook('S_ADD_INTER_PARTY_MATCH_POOL', 'event', () => { isInQueue = true })
+    mod.hook('S_DEL_INTER_PARTY_MATCH_POOL', 'event', () => { isInQueue = false })
 
     mod.command.add(['antitoxic','atx'], {
         $default: printHelp,
@@ -78,6 +82,7 @@ module.exports = function AntiToxic(mod) {
         if (enabled) return
 
         enabled = true
+        attempts = 0
         timer = (async function loop() {
             await monitorQueue();
             if (enabled) {
@@ -136,13 +141,22 @@ module.exports = function AntiToxic(mod) {
     }
     
     // TODO
-    // optimize - monitor only while in the matching queue
-    // and only if player is solo or party leader
+    // optimize - monitor only if player is solo or party leader
     async function monitorQueue() {
-        const me = mod.game.me.name
+        if (!isInQueue)
+            return
 
-        const response = await fetch(api);
-        if (!response || !response.ok) {
+        const me = mod.game.me.name
+        let response
+
+        try {
+            response = await fetch(api);
+            if (!response || !response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+        catch (error) {
+            mod.command.message(`<FONT COLOR="#FF2222">Failed to fetch: ${error.message}.</FONT>`)
             if (attempts++ === 4) {
                 mod.command.message(`<FONT COLOR="#FF2222">Failed to fetch api after ${attempts} attempts.</FONT>`)
                 disable()
